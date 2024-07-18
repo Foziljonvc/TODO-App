@@ -37,5 +37,12 @@ class DB
         $stmt->bindParam(':id', $id);
         $stmt->execute();
     }
+
+    public function TruncateTodo () 
+    {
+        $query = "TRUNCATE TABLE planuser";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute();
+    }
 }
 ?>

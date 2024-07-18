@@ -7,7 +7,12 @@ require 'DB.php';
 $db = new DB();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $db->SaveUserTodo();
+    if (isset($_POST['truncateButton']))
+    {
+        $db->TruncateTodo();
+    }else {
+        $db->SaveUserTodo();
+    }
     header('Location: View.php');
     exit();
 }
@@ -75,6 +80,11 @@ $usersInfo = $db->SendAllUsers();
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    <div>
+                        <form action="View.php" method="post">
+                            <button type="submit" class="btn btn-primary" name="truncateButton">Truncate</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
