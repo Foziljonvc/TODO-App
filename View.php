@@ -7,18 +7,33 @@ require 'DB.php';
 $db = new DB();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['truncateButton']))
-    {
+    if (isset($_POST['truncateButton'])) {
         $db->TruncateTodo();
-    }else {
+    } elseif (isset($_POST['id'])) {
+        $db->toggleTodoStatus((int)$_POST['id']);
+    } else {
         $db->SaveUserTodo();
     }
     header('Location: View.php');
     exit();
 }
 
+if (isset($_GET['complated'])) {
+    $id = (int)$_GET['complated'];
+    $db->StrikedUpdate($id, true);
+    header('Location: View.php');
+    exit();
+}
+
+if (isset($_GET['uncomplated'])) {
+    $id = (int)$_GET['uncomplated'];
+    $db->StrikedUpdate($id, false);
+    header('Location: View.php');
+    exit();
+}
+
 if (isset($_GET['id'])) {
-    $id = (int) $_GET['id'];
+    $id = (int)$_GET['id'];
     $db->DeletePlanUser($id);
     header('Location: View.php');
     exit();
@@ -36,9 +51,16 @@ $usersInfo = $db->SendAllUsers();
     <title>To-Do App</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        .completed {
+            text-decoration: line-through;
+        }
         .large-checkbox {
             width: 35px;
             height: 35px;
+        }
+        .checkbox {
+            width: 30px;
+            height: 30px;
         }
     </style>
 </head>
@@ -69,14 +91,21 @@ $usersInfo = $db->SendAllUsers();
                         <tbody>
                             <?php foreach ($usersInfo as $userInfo): ?>
                                 <tr>
-                                    <th scope="row"><?php 
-                                        echo $userInfo['todos']; ?></th>
+                                    <td class="<?php echo $userInfo['status'] ? 'completed' : ''; ?>">
+                                        <?php echo htmlspecialchars($userInfo['todos']); ?>
+                                    </td>
                                     <td>
-                                        <input type="checkbox" name="checkbox" class="large-checkbox">
+                                        <form action="View.php" method="post">
+                                            <input type="hidden" name="id" value="<?php echo $userInfo['id']; ?>">
+                                            <input type="checkbox" class="checkbox" 
+                                                   onChange="this.form.submit()" 
+                                                   <?php if ($userInfo['status']) echo 'checked'; ?>>
+                                        </form>
                                     </td>
                                     <td>
                                         <a href="View.php?id=<?php echo $userInfo['id']; ?>" class="btn btn-danger">Delete</a>
                                     </td>
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>

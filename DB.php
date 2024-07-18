@@ -38,6 +38,27 @@ class DB
         $stmt->execute();
     }
 
+    public function StrikedUpdate (int $id, bool $number) 
+    {
+        $status = $number;
+        $query = "UPDATE planuser SET status = :status WHERE id = :id";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
+        $stmt->execute();
+    }
+    
+    public function toggleTodoStatus($id)
+    {
+        $stmt = $this->pdo->prepare('SELECT status FROM planuser WHERE id = ?');
+        $stmt->execute([$id]);
+        $todo = $stmt->fetch();
+        $newStatus = $todo['status'] ? 0 : 1;
+
+        $stmt = $this->pdo->prepare('UPDATE planuser SET status = ? WHERE id = ?');
+        $stmt->execute([$newStatus, $id]);
+    }
+
     public function TruncateTodo () 
     {
         $query = "TRUNCATE TABLE planuser";
@@ -45,4 +66,3 @@ class DB
         $stmt->execute();
     }
 }
-?>
