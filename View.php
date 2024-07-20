@@ -55,7 +55,6 @@ if ($currentPage < 1) {
 $offset = ($currentPage - 1) * $itemsPerPage;
 
 $currentItems = array_slice($usersInfo, $offset, $itemsPerPage);
-
 ?>
 
 <!DOCTYPE html>

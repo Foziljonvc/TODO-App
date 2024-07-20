@@ -17,20 +17,13 @@ $client = new Client(['base_uri' => $tgApi]);
 $update = json_decode(file_get_contents('php://input'));
 
 $keyboard = [
-    'inline_keyboard' => [
-        [
-            ['text' => '🔵 Add task', 'callback_data' => 'add'],
-            ['text' => '🔵 Get task', 'callback_data' => 'get'],
-        ],
-        [
-            ['text' => '🟢 Check', 'callback_data' => 'check'],
-            ['text' => '🔴 Uncheck', 'callback_data' => 'uncheck'],
-        ],
-        [
-            ['text' => '🗑️ Truncate', 'callback_data' => 'truncate'],
-            ['text' => '❌ Delete', 'callback_data' => 'delete'],
-        ]
-    ]
+    'keyboard' => [
+        [['text' => '🔵 Add task'], ['text' => '🔵 Get task']],
+        [['text' => '🟢 Check'], ['text' => '🔴 Uncheck']],
+        [['text' => '🗑️ Truncate'], ['text' => '❌ Delete']]
+    ],
+    'resize_keyboard' => true,
+    'one_time_keyboard' => true
 ];
 
 if (isset($update->message)) {
@@ -42,19 +35,14 @@ if (isset($update->message)) {
         $client->post('sendMessage', [
             'form_params' => [
                 'chat_id' => $chat_id,
-                'text' => 'Select one of the inline buttons',
+                'text' => 'Select one of the buttons below',
                 'reply_markup' => json_encode($keyboard)
             ]
         ]);
         return;
     }
 
-    if ($text === '/truncate') {
-        $db->TruncateTodo();
-        return;
-    }
-
-    if ($text === '/add') {
+    if ($text === '🔵 Add task') {
         $db->sendText('add');
         $client->post('sendMessage', [
             'form_params' => [
@@ -65,106 +53,73 @@ if (isset($update->message)) {
         return;
     }
 
-    if ($text === '/get') {
+    if ($text === '🔵 Get task') {
         $tasks = $db->SendAllUsers();
-        $text = '';
+        $responseText = '';
         $count = 1;
 
         foreach ($tasks as $task) {
             if ($task['status'] == 1) {
-                $text .= $count . ': <del>' . $task['todos'] . '</del>' . "\n";
+                $responseText .= $count . ': <del>' . $task['todos'] . '</del>' . "\n";
             } else {
-                $text .= $count . ': ' . $task['todos'] . "\n";
+                $responseText .= $count . ': ' . $task['todos'] . "\n";
             }
-            $count += 1;
+            $count++;
         }
 
         $client->post('sendMessage', [
             'form_params' => [
                 'chat_id' => $chat_id,
-                'text' => $text,
+                'text' => $responseText,
                 'parse_mode' => 'HTML'
             ]
         ]);
         return;
     }
-}
 
-if (isset($update->callback_query)) {
-    $callback_query = $update->callback_query;
-    $callback_data = $callback_query->data;
-    $chat_id = $callback_query->message->chat->id;
-    
-    switch ($callback_data) {
-        case 'add':
-            $db->sendText('add');
-            $client->post('sendMessage', [
-                'form_params' => [
-                    'chat_id' => $chat_id,
-                    'text' => 'Please, Enter your task'
-                ]
-            ]);
-            break;
-        case 'get':
-            $tasks = $db->SendAllUsers();
-            $text = '';
-            $count = 1;
-            
-            foreach ($tasks as $task) {
-                if ($task['status'] == 1) {
-                    $text .= $count . ': <del>' . $task['todos'] . '</del>' . "\n";
-                } else {
-                    $text .= $count . ': ' . $task['todos'] . "\n";
-                }
-                $count += 1;
-            }
-
-            $client->post('sendMessage', [
-                'form_params' => [
-                    'chat_id' => $chat_id,
-                    'text' => $text,
-                    'parse_mode' => 'HTML'
-                ]
-            ]);
-            break;
-        case 'check':
-            $db->saveCheck('check');
-            $client->post('sendMessage', [
-                'form_params' => [
-                    'chat_id' => $chat_id,
-                    'text' => 'Enter the id number of your choice '
-                ]
-            ]);
-            break;
-        case 'uncheck':
-            $db->saveUncheck('uncheck');
-            $client->post('sendMessage', [
-                'form_params' => [
-                    'chat_id' => $chat_id,
-                    'text' => 'Enter the id number of your choice '
-                ]
-            ]);
-            break;
-        case 'delete':
-            $db->saveDelete('delete');
-            $client->post('sendMessage', [
-                'form_params' => [
-                    'chat_id' => $chat_id,
-                    'text' => 'Enter the id number of your choice'
-                ]
-            ]);
-            break;
-        case 'truncate':
-            $db->TruncateTodo();
-            $client->post('sendMessage', [
-                'form_params' => [
-                    'chat_id' => $chat_id,
-                    'text' => 'All tasks have been truncated.'
-                ]
-            ]);
-            break;
+    if ($text === '🟢 Check') {
+        $db->saveCheck('check');
+        $client->post('sendMessage', [
+            'form_params' => [
+                'chat_id' => $chat_id,
+                'text' => 'Enter the ID number of the task you want to check'
+            ]
+        ]);
+        return;
     }
-    return;
+
+    if ($text === '🔴 Uncheck') {
+        $db->saveUncheck('uncheck');
+        $client->post('sendMessage', [
+            'form_params' => [
+                'chat_id' => $chat_id,
+                'text' => 'Enter the ID number of the task you want to uncheck'
+            ]
+        ]);
+        return;
+    }
+
+    if ($text === '🗑️ Truncate') {
+        $db->TruncateTodo();
+        $client->post('sendMessage', [
+            'form_params' => [
+                'chat_id' => $chat_id,
+                'text' => 'All tasks have been truncated.'
+            ]
+        ]);
+        return;
+    }
+
+    if ($text === '❌ Delete') {
+        $db->saveDelete('delete');
+        $client->post('sendMessage', [
+            'form_params' => [
+                'chat_id' => $chat_id,
+                'text' => 'Enter the ID number of the task you want to delete'
+            ]
+        ]);
+        return;
+    }
 }
 
 if ($text) {
@@ -172,6 +127,13 @@ if ($text) {
     if ($add[0]['add'] === 'add') {
         $db->saveTeleText($text);
         $db->deleteAddText();
+        $client->post('sendMessage', [
+            'form_params' => [
+                'chat_id' => $chat_id,
+                'text' => 'Task added successfully!',
+                'reply_markup' => json_encode($keyboard)
+            ]
+        ]);
     }
 
     $check = $db->getCheck();
@@ -180,6 +142,13 @@ if ($text) {
         if ($checkNumber >= 0) {
             $db->checkTask($checkNumber);
             $db->deleteCheck();
+            $client->post('sendMessage', [
+                'form_params' => [
+                    'chat_id' => $chat_id,
+                    'text' => 'Task checked successfully!',
+                    'reply_markup' => json_encode($keyboard)
+                ]
+            ]);
         }
     }
 
@@ -189,6 +158,13 @@ if ($text) {
         if ($checkNumber >= 0) {
             $db->uncheckTask($checkNumber);
             $db->deleteUncheck();
+            $client->post('sendMessage', [
+                'form_params' => [
+                    'chat_id' => $chat_id,
+                    'text' => 'Task unchecked successfully!',
+                    'reply_markup' => json_encode($keyboard)
+                ]
+            ]);
         }
     }
 
@@ -196,5 +172,12 @@ if ($text) {
     if ($delete[0]['delete'] == 'delete') {
         $db->deleteTaskUser((int)$text - 1);
         $db->deleteTask();
+        $client->post('sendMessage', [
+            'form_params' => [
+                'chat_id' => $chat_id,
+                'text' => 'Task deleted successfully!',
+                'reply_markup' => json_encode($keyboard)
+            ]
+        ]);
     }
 }
