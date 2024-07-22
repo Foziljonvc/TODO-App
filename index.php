@@ -18,9 +18,9 @@ $update = json_decode(file_get_contents('php://input'));
 
 $keyboard = [
     'keyboard' => [
-        [['text' => '🔵 Add task'], ['text' => '🔵 Get task']],
-        [['text' => '🟢 Check'], ['text' => '🔴 Uncheck']],
-        [['text' => '🗑️ Truncate'], ['text' => '❌ Delete']]
+        [['text' => '➕ Add task'], ['text' => '➖ Delete']],
+        [['text' => '✅ Check'], ['text' => '🟩 Uncheck']],
+        [['text' => '🗑️ Truncate'], ['text' => '📋 Get task']]
     ],
     'resize_keyboard' => true,
     'one_time_keyboard' => true
@@ -42,7 +42,7 @@ if (isset($update->message)) {
         return;
     }
 
-    if ($text === '🔵 Add task') {
+    if ($text === '➕ Add task') {
         $db->sendText('add');
         $client->post('sendMessage', [
             'form_params' => [
@@ -53,7 +53,7 @@ if (isset($update->message)) {
         return;
     }
 
-    if ($text === '🔵 Get task') {
+    if ($text === '📋 Get task') {
         $tasks = $db->SendAllUsers();
         $responseText = '';
         $count = 1;
@@ -77,7 +77,7 @@ if (isset($update->message)) {
         return;
     }
 
-    if ($text === '🟢 Check') {
+    if ($text === '✅ Check') {
         $db->saveCheck('check');
         $client->post('sendMessage', [
             'form_params' => [
@@ -88,7 +88,7 @@ if (isset($update->message)) {
         return;
     }
 
-    if ($text === '🔴 Uncheck') {
+    if ($text === '🟩 Uncheck') {
         $db->saveUncheck('uncheck');
         $client->post('sendMessage', [
             'form_params' => [
@@ -110,7 +110,7 @@ if (isset($update->message)) {
         return;
     }
 
-    if ($text === '❌ Delete') {
+    if ($text === '➖ Delete') {
         $db->saveDelete('delete');
         $client->post('sendMessage', [
             'form_params' => [
