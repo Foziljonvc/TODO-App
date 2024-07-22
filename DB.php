@@ -225,7 +225,7 @@ class DB
 
     public function saveDelete (string $text)
     {
-        $query = "INSERT INTO telebot (delete) VALUES (:delete)";
+        $query = "INSERT INTO telebot (`delete`) VALUES (:delete)";
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':delete', $text);
         $stmt->execute();
@@ -259,7 +259,18 @@ class DB
         ORDER BY id
         LIMIT 1 OFFSET :offset
         ");
-        $stmtSub->bindParam(':offset', $id);
+        $stmtSub->bindValue(':offset', $id, PDO::PARAM_INT);
         $stmtSub->execute();
+    
+        $result = $stmtSub->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $taskId = $result['id'];
+            $stmtDelete = $this->pdo->prepare("
+            DELETE FROM planuser
+            WHERE id = :id
+            ");
+            $stmtDelete->bindParam(':id', $taskId, PDO::PARAM_INT);
+            $stmtDelete->execute();
+        }
     }
 }
