@@ -1,33 +1,24 @@
 <?php
 
-declare(strict_types=1);
+require_once "DB.php";
 
-class DB 
-{
-    private $pdo;
+class User extends DB{
 
-    public function __construct()
+    public function SaveUserTodo(string $text) 
     {
-        $this->pdo = new PDO("mysql:host=localhost;dbname=MyTodo", "foziljonvc", "1220");
-    }
-
-    public function SaveUserTodo() 
-    {
-        if (isset($_POST['input']) && !empty($_POST['input'])) {
-            $query = "INSERT INTO planuser (todos, status) VALUES (:todos, :status)";
-            $status = 0;
-            $stmt = $this->pdo->prepare($query);
-            $stmt->bindParam(':todos', $_POST['input']);
-            $stmt->bindParam(':status', $status);
-            $stmt->execute();
-        }
+        $query = "INSERT INTO planuser (todos, status) VALUES (:todos, :status)";
+        $status = 0;
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindParam(':todos', $text);
+        $stmt->bindParam(':status', $status);
+        $stmt->execute();
     }
 
     public function SendAllUsers() 
     {
         $query = "SELECT * FROM planuser";
         $stmt = $this->pdo->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function DeletePlanUser(int $id)
@@ -80,7 +71,7 @@ class DB
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
 
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $results;
     }
 
@@ -108,7 +99,7 @@ class DB
     {
         $query = "SELECT todos FROM planuser";
         $stmt = $this->pdo->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function checkTask(int $checkNumber)
@@ -121,9 +112,9 @@ class DB
             ORDER BY id 
             LIMIT 1 OFFSET :offset
         ");
-        $stmtSub->bindValue(':offset', $checkNumber, PDO::PARAM_INT);
+        $stmtSub->bindValue(':offset', $checkNumber, \PDO::PARAM_INT);
         $stmtSub->execute();
-        $result = $stmtSub->fetch(PDO::FETCH_ASSOC);
+        $result = $stmtSub->fetch(\PDO::FETCH_ASSOC);
         
         if ($result) {
             $id = $result['id'];
@@ -133,8 +124,8 @@ class DB
                 SET status = :status 
                 WHERE id = :id
             ");
-            $stmt->bindValue(':status', $status, PDO::PARAM_INT);
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->bindValue(':status', $status, \PDO::PARAM_INT);
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
             $stmt->execute();
         }
     }
@@ -153,7 +144,7 @@ class DB
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
 
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $results;
     }
 
@@ -177,9 +168,9 @@ class DB
             ORDER BY id 
             LIMIT 1 OFFSET :offset
         ");
-        $stmtSub->bindValue(':offset', $checkNumber, PDO::PARAM_INT);
+        $stmtSub->bindValue(':offset', $checkNumber, \PDO::PARAM_INT);
         $stmtSub->execute();
-        $result = $stmtSub->fetch(PDO::FETCH_ASSOC);
+        $result = $stmtSub->fetch(\PDO::FETCH_ASSOC);
         
         if ($result) {
             $id = $result['id'];
@@ -189,8 +180,8 @@ class DB
                 SET status = :status 
                 WHERE id = :id
             ");
-            $stmt->bindValue(':status', $status, PDO::PARAM_INT);
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->bindValue(':status', $status, \PDO::PARAM_INT);
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
             $stmt->execute();
         }
     }
@@ -209,7 +200,7 @@ class DB
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
 
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $results;
     }
 
@@ -237,7 +228,7 @@ class DB
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
 
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $results;
     }
 
@@ -259,17 +250,17 @@ class DB
         ORDER BY id
         LIMIT 1 OFFSET :offset
         ");
-        $stmtSub->bindValue(':offset', $id, PDO::PARAM_INT);
+        $stmtSub->bindValue(':offset', $id, \PDO::PARAM_INT);
         $stmtSub->execute();
     
-        $result = $stmtSub->fetch(PDO::FETCH_ASSOC);
+        $result = $stmtSub->fetch(\PDO::FETCH_ASSOC);
         if ($result) {
             $taskId = $result['id'];
             $stmtDelete = $this->pdo->prepare("
             DELETE FROM planuser
             WHERE id = :id
             ");
-            $stmtDelete->bindParam(':id', $taskId, PDO::PARAM_INT);
+            $stmtDelete->bindParam(':id', $taskId, \PDO::PARAM_INT);
             $stmtDelete->execute();
         }
     }

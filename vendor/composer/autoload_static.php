@@ -59,11 +59,14 @@ class ComposerStaticInit4b55c7ef33235a0353c1b6b079f86964
     );
 
     public static $classMap = array (
+        'Acquire' => __DIR__ . '/../..' . '/Bot/getMessage.php',
+        'Client' => __DIR__ . '/../..' . '/Bot/sendMessage.php',
         'ComposerAutoloaderInit4b55c7ef33235a0353c1b6b079f86964' => __DIR__ . '/..' . '/composer/autoload_real.php',
         'Composer\\Autoload\\ClassLoader' => __DIR__ . '/..' . '/composer/ClassLoader.php',
         'Composer\\Autoload\\ComposerStaticInit4b55c7ef33235a0353c1b6b079f86964' => __DIR__ . '/..' . '/composer/autoload_static.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'DB' => __DIR__ . '/../..' . '/DB.php',
+        'DB' => __DIR__ . '/../..' . '/src/DB.php',
+        'FrondAlgr' => __DIR__ . '/../..' . '/Fronted/frontedAlgorithm.php',
         'GuzzleHttp\\BodySummarizer' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/BodySummarizer.php',
         'GuzzleHttp\\BodySummarizerInterface' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/BodySummarizerInterface.php',
         'GuzzleHttp\\Client' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Client.php',
@@ -167,6 +170,8 @@ class ComposerStaticInit4b55c7ef33235a0353c1b6b079f86964
         'Psr\\Http\\Message\\UploadedFileInterface' => __DIR__ . '/..' . '/psr/http-message/src/UploadedFileInterface.php',
         'Psr\\Http\\Message\\UriFactoryInterface' => __DIR__ . '/..' . '/psr/http-factory/src/UriFactoryInterface.php',
         'Psr\\Http\\Message\\UriInterface' => __DIR__ . '/..' . '/psr/http-message/src/UriInterface.php',
+        'User' => __DIR__ . '/../..' . '/src/Task.php',
+        'keyboard' => __DIR__ . '/../..' . '/Bot/keyboard.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
