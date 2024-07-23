@@ -26,6 +26,9 @@ if (isset($update->update_id)) {
         case '/uncheck':
             $task->uncheckTask(($update->text) - 1);
             break;
+        case '/view':
+            print_r($task->SendAllUsers());
+            break;
         default:
             echo "Not found";
             break;
